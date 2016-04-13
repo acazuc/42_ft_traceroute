@@ -35,8 +35,6 @@ static void build_icmp_header(t_env *env, struct icmphdr *header)
 static int run_packet(t_env *env)
 {
 	t_packet packet;
-  ssize_t sended;
-  ssize_t got;
   long send;
   long recv;
   char ip[16];
@@ -48,27 +46,30 @@ static int run_packet(t_env *env)
     ft_memcpy(&(packet.data[0]), &env->pcount, sizeof(env->pcount));
   	build_ip_header(env, &packet.ip_header);
   	build_icmp_header(env, &packet.icmp_header);
-  	if ((sended = sendto(env->socket, &packet, sizeof(packet), MSG_CONFIRM, env->addr, env->addrlen)) == -1)
+  	if (sendto(env->socket, &packet, sizeof(packet), MSG_CONFIRM, env->addr, env->addrlen) == -1)
     {
   	   continue;
     }
     send = epoch_micro();
     int i = 0;
-    while (i < 3) {
+    while (i < 1) {
       ft_bzero(&packet, sizeof(packet));
-      if ((got = recvfrom(env->socket, &packet, sizeof(packet), 0, env->addr, (socklen_t*)&env->addrlen)) == -1)
+      if (recvfrom(env->socket, &packet, sizeof(packet), 0, env->addr, (socklen_t*)&env->addrlen) == -1)
     	{
         i++;
         continue;
       }
+      recv = epoch_micro();
       if (packet.icmp_header.type != 11 && packet.icmp_header.type != 0)
       {
-        i++;
         continue;
       }
-      recv = epoch_micro();
+			if (packet.icmp_header.type == 0 && (packet.icmp_header.un.echo.sequence != env->pcount || packet.icmp_header.un.echo.id != getpid()))
+			{
+				continue;
+			}
       printf("%2d. %-15s %.1f ms\n", env->count, inet_ntop(AF_INET, &packet.ip_header.saddr, ip, 16), (recv - send) / 1000.);
-      if (!ft_strcmp(env->ip, ip))
+      if (packet.icmp_header.type == 0)
       {
         return (1);
       }
