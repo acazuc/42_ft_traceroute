@@ -23,14 +23,13 @@ typedef struct s_packet t_packet;
 
 struct s_env
 {
-	unsigned char hops;
 	char *destination;
 	char *ip;
 	int socket;
 	struct sockaddr *addr;
 	size_t addrlen;
 	uint16_t count;
-  uint16_t pcount;
+	uint16_t pcount;
 };
 
 struct s_packet

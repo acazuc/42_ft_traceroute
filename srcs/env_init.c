@@ -2,7 +2,6 @@
 
 void env_init(t_env *env)
 {
-  env->hops = 255;
   env->destination = NULL;
   env->ip = NULL;
   env->count = 0;

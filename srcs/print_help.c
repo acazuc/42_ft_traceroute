@@ -2,6 +2,6 @@
 
 void print_help(void)
 {
-	ft_putstr_fd("Usage: ft_traceroute [-h max_hops] destination\n", 2);
+	ft_putstr_fd("Usage: ft_traceroute [-h] destination\n-h print help", 2);
 	exit(EXIT_FAILURE);
 }

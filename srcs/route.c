@@ -94,7 +94,7 @@ void route(t_env *env)
   {
       ft_putendl_fd("ft_traceroute: can't sockopt send_timeout", 2);
   }
-  while (!finished && env->count < env->hops)
+  while (!finished)
   {
     env->count++;
     if (run_packet(env))
