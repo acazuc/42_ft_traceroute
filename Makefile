@@ -21,6 +21,14 @@ INCLUDES_PATH = includes/
 SRCS_PATH = srcs/
 
 SRCS_NAME = main.c \
+			epoch_micro.c \
+			ip_checksum.c \
+			parse_params.c \
+			print_help.c \
+			resolve_destination.c \
+			env_init.c \
+			do_connect.c \
+			route.c \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 
