@@ -2,21 +2,21 @@
 # define FT_TRACEROUTE_H
 
 # include "../libft/includes/libft.h"
-# include <sys/types.h>
 # include <sys/socket.h>
-# include <arpa/inet.h>
 # include <netinet/in.h>
-# include <netdb.h>
-# include <stdint.h>
-# include <limits.h>
-# include <math.h>
-# include <unistd.h>
 # include <linux/icmp.h>
+# include <sys/types.h>
+# include <arpa/inet.h>
 # include <linux/ip.h>
 # include <sys/time.h>
+# include <stdint.h>
+# include <limits.h>
+# include <unistd.h>
 # include <signal.h>
 # include <stdio.h>
 # include <errno.h>
+# include <netdb.h>
+# include <math.h>
 
 typedef struct s_env t_env;
 typedef struct s_packet t_packet;
