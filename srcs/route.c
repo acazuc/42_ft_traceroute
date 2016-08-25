@@ -35,24 +35,22 @@ static void build_icmp_header(t_env *env, struct icmphdr *header)
 static int run_packet(t_env *env)
 {
 	t_packet packet;
-  long send;
-  long recv;
-  char ip[16];
+	long send;
+	long recv;
+	char ip[16];
 
-  while (1)
-  {
-    env->pcount++;
-    ft_bzero(&packet.data, sizeof(packet.data));
-    ft_memcpy(&(packet.data[0]), &env->pcount, sizeof(env->pcount));
-  	build_ip_header(env, &packet.ip_header);
-  	build_icmp_header(env, &packet.icmp_header);
-  	if (sendto(env->socket, &packet, sizeof(packet), MSG_CONFIRM, env->addr, env->addrlen) == -1)
-    {
-  	   continue;
-    }
-    send = epoch_micro();
-    int i = 0;
-    while (i < 1) {
+	while (1)
+	{
+		env->pcount++;
+		ft_bzero(&packet.data, sizeof(packet.data));
+		ft_memcpy(&(packet.data[0]), &env->pcount, sizeof(env->pcount));
+		build_ip_header(env, &packet.ip_header);
+		build_icmp_header(env, &packet.icmp_header);
+		if (sendto(env->socket, &packet, sizeof(packet), MSG_CONFIRM, env->addr, env->addrlen) == -1)
+			continue;
+		send = epoch_micro();
+		int i = 0;
+		while (i < 1) {
       ft_bzero(&packet, sizeof(packet));
       if (recvfrom(env->socket, &packet, sizeof(packet), 0, env->addr, (socklen_t*)&env->addrlen) == -1)
     	{
