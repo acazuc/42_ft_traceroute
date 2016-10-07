@@ -38,9 +38,11 @@ static int run_packet(t_env *env)
 	long send;
 	long recv;
 	char ip[16];
+	int j = 0;
 
-	while (1)
+	while (j < 6)
 	{
+		env->count++;
 		env->pcount++;
 		ft_bzero(&packet.data, sizeof(packet.data));
 		ft_memcpy(&(packet.data[0]), &env->pcount, sizeof(env->pcount));
@@ -50,55 +52,64 @@ static int run_packet(t_env *env)
 			continue;
 		send = epoch_micro();
 		int i = 0;
-		while (i < 1) {
-      ft_bzero(&packet, sizeof(packet));
-      if (recvfrom(env->socket, &packet, sizeof(packet), 0, env->addr, (socklen_t*)&env->addrlen) == -1)
-    	{
-        i++;
-        continue;
-      }
-      recv = epoch_micro();
-      if (packet.icmp_header.type != 11 && packet.icmp_header.type != 0)
-      {
-        continue;
-      }
+		while (i < 3)
+		{
+			ft_bzero(&packet, sizeof(packet));
+			if (recvfrom(env->socket, &packet, sizeof(packet), 0, env->addr, (socklen_t*)&env->addrlen) == -1)
+			{
+				if (i == 0)
+					printf("%2d ", env->count);
+				printf(" *");
+				if (i == 2)
+					printf("\n");
+				fflush(stdout);
+				i++;
+				continue;
+			}
+			recv = epoch_micro();
+			if (packet.icmp_header.type != 11 && packet.icmp_header.type != 0)
+			{
+				continue;
+			}
 			if (packet.icmp_header.type == 0 && (packet.icmp_header.un.echo.sequence != env->pcount || packet.icmp_header.un.echo.id != getpid()))
 			{
 				continue;
 			}
-      printf("%2d. %-15s %.1f ms\n", env->count, inet_ntop(AF_INET, &packet.ip_header.saddr, ip, 16), (recv - send) / 1000.);
-      if (packet.icmp_header.type == 0)
-      {
-        return (1);
-      }
-      return (0);
-    }
-  }
-  return (0);
+			if (i == 0)
+				printf("%2d ", env->count);
+			printf(" %-15s %.1f ms\n", inet_ntop(AF_INET, &packet.ip_header.saddr, ip, 16), (recv - send) / 1000.);
+			if (packet.icmp_header.type == 0)
+			{
+				return (1);
+			}
+			return (0);
+		}
+		++j;
+	}
+	return (1);
 }
 
 void route(t_env *env)
 {
-  int finished;
-  struct timeval tv;
+	int finished;
+	struct timeval tv;
 
-  finished = 0;
-  tv.tv_sec = 1;
-  tv.tv_usec = 0;
-  if (setsockopt(env->socket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0)
-  {
-      ft_putendl_fd("ft_traceroute: can't sockopt receive_timeout", 2);
-  }
-  if (setsockopt(env->socket, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv)) < 0)
-  {
-      ft_putendl_fd("ft_traceroute: can't sockopt send_timeout", 2);
-  }
-  while (!finished)
-  {
-    env->count++;
-    if (run_packet(env))
-    {
-      finished = 1;
-    }
-  }
+	finished = 0;
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
+	if (setsockopt(env->socket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0)
+	{
+		ft_putendl_fd("ft_traceroute: can't sockopt receive_timeout", 2);
+	}
+	if (setsockopt(env->socket, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv)) < 0)
+	{
+		ft_putendl_fd("ft_traceroute: can't sockopt send_timeout", 2);
+	}
+	while (!finished)
+	{
+		if (run_packet(env))
+		{
+			finished = 1;
+		}
+	}
 }
