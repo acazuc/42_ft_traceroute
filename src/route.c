@@ -42,6 +42,8 @@ static int run_packet(t_env *env)
 
 	while (j < 6)
 	{
+		if (env->count > 30)
+			break;
 		env->count++;
 		env->pcount++;
 		ft_bzero(&packet.data, sizeof(packet.data));
@@ -49,7 +51,10 @@ static int run_packet(t_env *env)
 		build_ip_header(env, &packet.ip_header);
 		build_icmp_header(env, &packet.icmp_header);
 		if (sendto(env->socket, &packet, sizeof(packet), MSG_CONFIRM, env->addr, env->addrlen) == -1)
-			continue;
+		{
+			ft_putendl_fd("ft_traceroute: can't send packet", 2);
+			exit(EXIT_FAILURE);
+		}
 		send = epoch_micro();
 		int i = 0;
 		while (i < 3)
@@ -57,6 +62,11 @@ static int run_packet(t_env *env)
 			ft_bzero(&packet, sizeof(packet));
 			if (recvfrom(env->socket, &packet, sizeof(packet), 0, env->addr, (socklen_t*)&env->addrlen) == -1)
 			{
+				if (errno != EAGAIN && errno != EWOULDBLOCK)
+				{
+					ft_putendl_fd("ft_traceroute: can't read packet", 2);
+					exit(EXIT_FAILURE);
+				}
 				if (i == 0)
 					printf("%2d ", env->count);
 				printf(" *");
@@ -68,13 +78,9 @@ static int run_packet(t_env *env)
 			}
 			recv = epoch_micro();
 			if (packet.icmp_header.type != 11 && packet.icmp_header.type != 0)
-			{
 				continue;
-			}
 			if (packet.icmp_header.type == 0 && (packet.icmp_header.un.echo.sequence != env->pcount || packet.icmp_header.un.echo.id != getpid()))
-			{
 				continue;
-			}
 			if (i == 0)
 				printf("%2d ", env->count);
 			printf(" %-15s %.1f ms\n", inet_ntop(AF_INET, &packet.ip_header.saddr, ip, 16), (recv - send) / 1000.);
