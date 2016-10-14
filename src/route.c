@@ -99,7 +99,7 @@ void route(t_env *env)
 {
 	struct timeval tv;
 
-	tv.tv_sec = 1;
+	tv.tv_sec = 5;
 	tv.tv_usec = 0;
 	if (setsockopt(env->socket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0)
 	{
