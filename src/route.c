@@ -36,7 +36,7 @@ static int run_packet(t_env *env)
 {
 	t_packet packet;
 	int finished = 0;
-	int printed;
+	unsigned int oldip = 0;
 	long send;
 	long recv;
 	int i;
@@ -48,7 +48,6 @@ static int run_packet(t_env *env)
 	printf("%2d ", env->count);
 	fflush(stdout);
 	i = -1;
-	printed = 0;
 	while (++i < 3)
 	{
 		ft_bzero(&packet.data, sizeof(packet.data));
@@ -78,13 +77,13 @@ static int run_packet(t_env *env)
 			continue;
 		if (packet.icmp_header.type == 0 && (packet.icmp_header.un.echo.sequence != env->pcount || packet.icmp_header.un.echo.id != getpid()))
 			continue;
-		if (!printed)
+		if (packet.ip_header.saddr != oldip)
 		{
+			oldip = packet.ip_header.saddr;
 			struct in_addr addr;
 			addr.s_addr = packet.ip_header.saddr;
 			printf(" %s", inet_ntoa(addr));
 		}
-		printed = 1;
 		printf("  %.3f ms", (recv - send) / 1000.);
 		fflush(stdout);
 		if (packet.icmp_header.type == 0)
