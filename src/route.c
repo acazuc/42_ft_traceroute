@@ -71,10 +71,7 @@ static int run_packet(t_env *env)
 			if (i == 0)
 				printf("%2d ", env->count);
 			printf(" *");
-			if (i == 2)
-				printf("\n");
 			fflush(stdout);
-			i++;
 			continue;
 		}
 		recv = epoch_micro();
@@ -88,6 +85,7 @@ static int run_packet(t_env *env)
 			printf(" %-15s", inet_ntop(AF_INET, &packet.ip_header.saddr, ip, 16));
 		printed = 1;
 		printf(" %.1f ms", (recv - send) / 1000.);
+		fflush(stdout);
 		if (packet.icmp_header.type == 0)
 		{
 			finished = 1;
