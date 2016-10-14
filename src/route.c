@@ -42,10 +42,12 @@ static int run_packet(t_env *env)
 	char ip[16];
 	int i;
 
-	if (env->count > 30)
-		return (1);
 	env->count++;
 	env->pcount++;
+	if (env->count > 30)
+		return (1);
+	printf("%2d ", env->count);
+	fflush(stdout);
 	i = -1;
 	printed = 0;
 	while (++i < 3)
@@ -68,8 +70,6 @@ static int run_packet(t_env *env)
 				ft_putendl_fd("ft_traceroute: can't read packet", 2);
 				exit(EXIT_FAILURE);
 			}
-			if (i == 0)
-				printf("%2d ", env->count);
 			printf(" *");
 			fflush(stdout);
 			continue;
@@ -79,8 +79,6 @@ static int run_packet(t_env *env)
 			continue;
 		if (packet.icmp_header.type == 0 && (packet.icmp_header.un.echo.sequence != env->pcount || packet.icmp_header.un.echo.id != getpid()))
 			continue;
-		if (i == 0)
-			printf("%2d ", env->count);
 		if (!printed)
 			printf(" %-15s", inet_ntop(AF_INET, &packet.ip_header.saddr, ip, 16));
 		printed = 1;
