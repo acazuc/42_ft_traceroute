@@ -39,7 +39,6 @@ static int run_packet(t_env *env)
 	int printed;
 	long send;
 	long recv;
-	char ip[16];
 	int i;
 
 	env->count++;
@@ -80,9 +79,13 @@ static int run_packet(t_env *env)
 		if (packet.icmp_header.type == 0 && (packet.icmp_header.un.echo.sequence != env->pcount || packet.icmp_header.un.echo.id != getpid()))
 			continue;
 		if (!printed)
-			printf(" %-15s", inet_ntop(AF_INET, &packet.ip_header.saddr, ip, 16));
+		{
+			struct in_addr addr;
+			addr.s_addr = packet.ip_header.saddr;
+			printf(" %s", inet_ntoa(addr));
+		}
 		printed = 1;
-		printf(" %.1f ms", (recv - send) / 1000.);
+		printf("  %.3f ms", (recv - send) / 1000.);
 		fflush(stdout);
 		if (packet.icmp_header.type == 0)
 		{
