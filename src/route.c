@@ -46,9 +46,9 @@ static int run_packet(t_env *env)
 		return (1);
 	env->count++;
 	env->pcount++;
-	i = 0;
+	i = -1;
 	printed = 0;
-	while (++i < 4)
+	while (++i < 3)
 	{
 		ft_bzero(&packet.data, sizeof(packet.data));
 		ft_memcpy(&(packet.data[0]), &env->pcount, sizeof(env->pcount));
