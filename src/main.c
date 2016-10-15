@@ -19,4 +19,5 @@ int main(int ac, char **av)
 	ft_putstr(env.ip);
 	ft_putstr("), 30 hops max, 60 byte packets\n");
 	route(&env);
+	return (EXIT_SUCCESS);
 }
